@@ -1,9 +1,13 @@
+export const runtime = 'nodejs';
+
 import { NextRequest } from 'next/server';
 import { dbConnect } from '@/lib/mongodb';
 import { authenticate } from '@/lib/auth';
 import Request from '@/models/Request';
 import Stock from '@/models/Stock';
 import Item from '@/models/Item';
+import Shelter from '@/models/Shelter';
+import User from '@/models/User';
 import { errorResponse, successResponse } from '@/utils/responseHandler';
 
 export async function POST(req: NextRequest) {

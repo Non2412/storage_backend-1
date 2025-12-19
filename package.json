@@ -6,10 +6,15 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed": "ts-node scripts/seed-complete.ts",
+    "seed:old": "ts-node scripts/seed-data.ts",
+    "import:shelters": "ts-node scripts/import-shelters.ts"
   },
   "dependencies": {
+    "axios": "^1.13.2",
     "bcryptjs": "^2.4.3",
+    "dotenv": "^17.2.3",
     "jsonwebtoken": "^9.0.0",
     "mongodb": "^6.3.0",
     "mongoose": "^7.5.0",
@@ -26,6 +31,7 @@
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.10",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

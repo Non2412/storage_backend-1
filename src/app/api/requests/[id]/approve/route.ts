@@ -9,9 +9,10 @@ import { errorResponse, successResponse } from '@/utils/responseHandler';
 
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const authResult = await authenticate(req);
     if (!authResult.authenticated) {
       return authResult.response;
@@ -22,7 +23,6 @@ export async function POST(
     }
 
     await dbConnect();
-    const { id } = params;
     const body = await req.json();
     const { items, warehouseId } = body;
 

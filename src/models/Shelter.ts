@@ -28,8 +28,13 @@ const shelterSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ['normal', 'nearly_full', 'full'],
+      enum: ['normal', 'nearly_full', 'full', 'active', 'inactive', 'closed'],
       default: 'normal',
+    },
+    shelterType: {
+      type: String,
+      enum: ['ศูนย์พักพิงหลัก', 'บ้านญาติ'],
+      default: 'ศูนย์พักพิงหลัก',
     },
     contactName: String,
     contactPhone: String,

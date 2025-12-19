@@ -1,0 +1,422 @@
+{
+  "info": {
+    "_postman_id": "shelter-api-collection",
+    "name": "Shelter Management System API",
+    "description": "API Testing Collection for Disaster Relief Storage Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New User\",\n  \"email\": \"newuser@example.com\",\n  \"username\": \"newuser\",\n  \"password\": \"password123\",\n  \"role\": \"shelter_staff\",\n  \"phone\": \"0812345678\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@test.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🏛️ Shelters",
+      "item": [
+        {
+          "name": "Get All Shelters",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/shelters",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shelters"]
+            }
+          }
+        },
+        {
+          "name": "Get Shelters by Province",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/shelters?province=Bangkok",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shelters"],
+              "query": [
+                {
+                  "key": "province",
+                  "value": "Bangkok"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Shelter (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Shelter Bangkok Central\",\n  \"province\": \"Bangkok\",\n  \"district\": \"Pathumwan\",\n  \"address\": \"123 Rama 1 Road\",\n  \"capacity\": 500,\n  \"currentPeople\": 150,\n  \"contactName\": \"Manager Name\",\n  \"contactPhone\": \"0812345678\",\n  \"latitude\": 13.7563,\n  \"longitude\": 100.5018\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/shelters",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shelters"]
+            }
+          }
+        },
+        {
+          "name": "Get Shelter Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/shelters/{{shelter_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "shelters", "{{shelter_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📝 Requests",
+      "item": [
+        {
+          "name": "Submit Request (Shelter Staff)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"shelterId\": \"{{shelter_id}}\",\n  \"items\": [\n    {\n      \"itemId\": \"{{item_id}}\",\n      \"quantityRequested\": 10\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/requests",
+              "host": ["{{base_url}}"],
+              "path": ["api", "requests"]
+            }
+          }
+        },
+        {
+          "name": "Get All Requests",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/requests",
+              "host": ["{{base_url}}"],
+              "path": ["api", "requests"]
+            }
+          }
+        },
+        {
+          "name": "Get Requests by Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/requests?status=pending",
+              "host": ["{{base_url}}"],
+              "path": ["api", "requests"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Request Detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/requests/{{request_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "requests", "{{request_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Approve Request (Warehouse Staff)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"itemId\": \"{{item_id}}\",\n      \"quantityApproved\": 8\n    }\n  ],\n  \"warehouseId\": \"{{warehouse_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/requests/{{request_id}}/approve",
+              "host": ["{{base_url}}"],
+              "path": ["api", "requests", "{{request_id}}", "approve"]
+            }
+          }
+        },
+        {
+          "name": "Transfer Items & Cut Stock (Warehouse Staff)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"itemId\": \"{{item_id}}\",\n      \"quantityTransferred\": 8\n    }\n  ],\n  \"warehouseId\": \"{{warehouse_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/requests/{{request_id}}/transfer",
+              "host": ["{{base_url}}"],
+              "path": ["api", "requests", "{{request_id}}", "transfer"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📦 Stocks",
+      "item": [
+        {
+          "name": "Check Item Availability",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"itemId\": \"{{item_id}}\",\n  \"quantity\": 10\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/stocks/check-availability",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stocks", "check-availability"]
+            }
+          }
+        },
+        {
+          "name": "Get Low Stock Items",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/stocks/low-stock",
+              "host": ["{{base_url}}"],
+              "path": ["api", "stocks", "low-stock"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📊 Dashboard",
+      "item": [
+        {
+          "name": "Dashboard Overview",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/dashboard/overview",
+              "host": ["{{base_url}}"],
+              "path": ["api", "dashboard", "overview"]
+            }
+          }
+        },
+        {
+          "name": "Shelter Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/dashboard/shelter-status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "dashboard", "shelter-status"]
+            }
+          }
+        },
+        {
+          "name": "Stock Status",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/dashboard/stock-status?warehouseId={{warehouse_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "dashboard", "stock-status"],
+              "query": [
+                {
+                  "key": "warehouseId",
+                  "value": "{{warehouse_id}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "shelter_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "request_id",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "item_id",
+      "value": "507f1f77bcf86cd799439012",
+      "type": "string"
+    },
+    {
+      "key": "warehouse_id",
+      "value": "",
+      "type": "string"
+    }
+  ]
+}
