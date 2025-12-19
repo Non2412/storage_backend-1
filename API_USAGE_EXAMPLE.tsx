@@ -179,7 +179,10 @@ function RequestList() {
 // ===== Submit Form Example =====
 
 function SubmitRequestForm() {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    shelterId: string;
+    items: { itemId: string; quantityRequested: number }[];
+  }>({
     shelterId: '',
     items: [],
   });

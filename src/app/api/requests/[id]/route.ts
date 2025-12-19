@@ -6,7 +6,7 @@ import { successResponse, errorResponse } from '@/utils/responseHandler';
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authResult = await authenticate(req);
@@ -15,7 +15,7 @@ export async function GET(
     }
 
     await dbConnect();
-    const { id } = params;
+    const { id } = await params;
 
     const request = await Request.findById(id)
       .populate([
@@ -38,7 +38,7 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const authResult = await authenticate(req);
@@ -47,7 +47,7 @@ export async function PUT(
     }
 
     await dbConnect();
-    const { id } = params;
+    const { id } = await params;
     const body = await req.json();
 
     // Only allow updates if status is pending
