@@ -103,13 +103,13 @@ export async function POST(req: NextRequest) {
     }
 
     // 5. Create Admin User if not exists
-    let adminUser = await User.findOne({ email: 'admin@sisaket.go.th' });
+    let adminUser = await User.findOne({ $or: [{ email: 'admin@sisaket.go.th' }, { username: 'admin' }] });
     if (!adminUser) {
       const hashedPassword = await bcrypt.hash('admin123', 10);
       adminUser = await User.create({
         name: 'ผู้ดูแลระบบ',
         email: 'admin@sisaket.go.th',
-        username: 'admin',
+        username: 'admin_sisaket',
         password: hashedPassword,
         role: 'admin',
         phone: '045-123456',
@@ -117,13 +117,13 @@ export async function POST(req: NextRequest) {
     }
 
     // 6. Create Warehouse Staff if not exists
-    let warehouseStaff = await User.findOne({ email: 'warehouse@sisaket.go.th' });
+    let warehouseStaff = await User.findOne({ $or: [{ email: 'warehouse@sisaket.go.th' }, { username: 'warehouse' }] });
     if (!warehouseStaff) {
       const hashedPassword = await bcrypt.hash('warehouse123', 10);
       warehouseStaff = await User.create({
         name: 'เจ้าหน้าที่คลัง',
         email: 'warehouse@sisaket.go.th',
-        username: 'warehouse',
+        username: 'warehouse_sisaket',
         password: hashedPassword,
         role: 'warehouse_staff',
         phone: '045-123457',
