@@ -18,7 +18,10 @@ export async function POST(req: NextRequest) {
     if (reset) {
       // Delete existing users created by seed
       await User.deleteMany({ 
-        email: { $in: ['admin@sisaket.go.th', 'warehouse@sisaket.go.th'] } 
+        $or: [
+          { email: { $in: ['admin@sisaket.go.th', 'warehouse@sisaket.go.th'] } },
+          { username: { $in: ['admin', 'admin_sisaket', 'warehouse', 'warehouse_sisaket'] } }
+        ]
       });
     }
 
