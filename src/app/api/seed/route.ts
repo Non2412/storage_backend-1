@@ -6,11 +6,21 @@ import Warehouse from '@/models/Warehouse';
 import Stock from '@/models/Stock';
 import User from '@/models/User';
 import { successResponse, errorResponse } from '@/utils/responseHandler';
-import bcrypt from 'bcryptjs';
 
 export async function POST(req: NextRequest) {
   try {
     await dbConnect();
+
+    // Check if reset is requested
+    const { searchParams } = new URL(req.url);
+    const reset = searchParams.get('reset') === 'true';
+
+    if (reset) {
+      // Delete existing users created by seed
+      await User.deleteMany({ 
+        email: { $in: ['admin@sisaket.go.th', 'warehouse@sisaket.go.th'] } 
+      });
+    }
 
     // 1. Create Categories
     const categories = [
@@ -105,12 +115,11 @@ export async function POST(req: NextRequest) {
     // 5. Create Admin User if not exists
     let adminUser = await User.findOne({ $or: [{ email: 'admin@sisaket.go.th' }, { username: 'admin' }] });
     if (!adminUser) {
-      const hashedPassword = await bcrypt.hash('admin123', 10);
       adminUser = await User.create({
         name: 'ผู้ดูแลระบบ',
         email: 'admin@sisaket.go.th',
         username: 'admin_sisaket',
-        password: hashedPassword,
+        password: 'admin123', // Model will hash this automatically
         role: 'admin',
         phone: '045-123456',
       });
@@ -119,12 +128,11 @@ export async function POST(req: NextRequest) {
     // 6. Create Warehouse Staff if not exists
     let warehouseStaff = await User.findOne({ $or: [{ email: 'warehouse@sisaket.go.th' }, { username: 'warehouse' }] });
     if (!warehouseStaff) {
-      const hashedPassword = await bcrypt.hash('warehouse123', 10);
       warehouseStaff = await User.create({
         name: 'เจ้าหน้าที่คลัง',
         email: 'warehouse@sisaket.go.th',
         username: 'warehouse_sisaket',
-        password: hashedPassword,
+        password: 'warehouse123', // Model will hash this automatically
         role: 'warehouse_staff',
         phone: '045-123457',
         warehouseId: warehouse._id,
