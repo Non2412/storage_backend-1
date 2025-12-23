@@ -6,6 +6,7 @@ import Warehouse from '@/models/Warehouse';
 import Stock from '@/models/Stock';
 import StockLog from '@/models/StockLog';
 import User from '@/models/User';
+import Shelter from '@/models/Shelter';
 import { successResponse, errorResponse } from '@/utils/responseHandler';
 
 export async function POST(req: NextRequest) {
@@ -20,8 +21,8 @@ export async function POST(req: NextRequest) {
       // Delete existing users created by seed
       await User.deleteMany({ 
         $or: [
-          { email: { $in: ['admin@sisaket.go.th', 'warehouse@sisaket.go.th'] } },
-          { username: { $in: ['admin', 'admin_sisaket', 'warehouse', 'warehouse_sisaket'] } }
+          { email: { $in: ['admin@sisaket.go.th', 'warehouse@sisaket.go.th', 'shelter@sisaket.go.th'] } },
+          { username: { $in: ['admin', 'admin_sisaket', 'warehouse', 'warehouse_sisaket', 'shelter_staff'] } }
         ]
       });
     }
@@ -143,6 +144,36 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // 6.5 Create Shelter Staff if not exists
+    let shelterStaff = await User.findOne({ $or: [{ email: 'shelter@sisaket.go.th' }, { username: 'shelter_staff' }] });
+    if (!shelterStaff) {
+      // First create a sample shelter
+      let shelter = await Shelter.findOne({ name: 'ศูนย์พักพิงชั่วคราว A' });
+      if (!shelter) {
+        shelter = await Shelter.create({
+          name: 'ศูนย์พักพิงชั่วคราว A',
+          province: 'ศรีสะเกษ',
+          district: 'เมือง',
+          address: '456 ถนนศรีสะเกษ',
+          capacity: 200,
+          currentPeople: 50,
+          status: 'normal',
+          contactName: 'นางสาวสมหญิง ใจงาม',
+          contactPhone: '045-111222',
+        });
+      }
+
+      shelterStaff = await User.create({
+        name: 'เจ้าหน้าที่ศูนย์พักพิง',
+        email: 'shelter@sisaket.go.th',
+        username: 'shelter_staff',
+        password: 'shelter123', // Model will hash this automatically
+        role: 'shelter_staff',
+        phone: '045-123458',
+        shelterId: shelter._id,
+      });
+    }
+
     // 7. Create sample Stock Logs for history
     const stockLogsCount = await StockLog.countDocuments();
     let createdLogs = 0;
@@ -185,6 +216,7 @@ export async function POST(req: NextRequest) {
         users: {
           admin: 'admin@sisaket.go.th / admin123',
           warehouse: 'warehouse@sisaket.go.th / warehouse123',
+          shelter: 'shelter@sisaket.go.th / shelter123',
         },
       },
     });
