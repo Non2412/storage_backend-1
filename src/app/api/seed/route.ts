@@ -25,6 +25,12 @@ export async function POST(req: NextRequest) {
           { username: { $in: ['admin', 'admin_sisaket', 'warehouse', 'warehouse_sisaket', 'shelter_staff'] } }
         ]
       });
+      
+      // Delete ALL items and stocks to recreate with Thai names
+      await StockLog.deleteMany({});
+      await Stock.deleteMany({});
+      await Item.deleteMany({});
+      await Category.deleteMany({});
     }
 
     // 1. Create Categories
@@ -32,6 +38,7 @@ export async function POST(req: NextRequest) {
       { name: 'อาหารและเครื่องดื่ม', description: 'อาหาร น้ำดื่ม เครื่องดื่ม' },
       { name: 'เสื้อผ้าและผ้าห่ม', description: 'เสื้อผ้า ผ้าห่ม ผ้าขนหนู' },
       { name: 'ยาและเวชภัณฑ์', description: 'ยา อุปกรณ์ทางการแพทย์' },
+      { name: 'อุปกรณ์สุขอนามัย', description: 'สบู่ แชมพู ยาสีฟัน ของใช้ส่วนตัว' },
     ];
 
     const createdCategories: any[] = [];
@@ -59,18 +66,31 @@ export async function POST(req: NextRequest) {
     const foodCategory = createdCategories.find(c => c.name === 'อาหารและเครื่องดื่ม');
     const clothCategory = createdCategories.find(c => c.name === 'เสื้อผ้าและผ้าห่ม');
     const medCategory = createdCategories.find(c => c.name === 'ยาและเวชภัณฑ์');
+    const hygieneCategory = createdCategories.find(c => c.name === 'อุปกรณ์สุขอนามัย');
 
     const itemsData = [
-      { name: 'ข้าวสาร', categoryId: foodCategory._id, unit: 'kg', description: 'ข้าวสารหอมมะลิ' },
-      { name: 'น้ำดื่ม', categoryId: foodCategory._id, unit: 'box', description: 'น้ำดื่มขวด 600ml แพ็ค 12' },
-      { name: 'นมกล่อง', categoryId: foodCategory._id, unit: 'box', description: 'นม UHT 200ml' },
-      { name: 'บะหมี่กึ่งสำเร็จรูป', categoryId: foodCategory._id, unit: 'box', description: 'บะหมี่สำเร็จรูป กล่องละ 30 ซอง' },
-      { name: 'ผ้าห่ม', categoryId: clothCategory._id, unit: 'piece', description: 'ผ้าห่มนวม' },
-      { name: 'เสื้อผ้า', categoryId: clothCategory._id, unit: 'piece', description: 'เสื้อผ้าสำเร็จรูป' },
-      { name: 'ผ้าขนหนู', categoryId: clothCategory._id, unit: 'piece', description: 'ผ้าขนหนูขนาดใหญ่' },
-      { name: 'ยาพาราเซตามอล', categoryId: medCategory._id, unit: 'box', description: 'ยาลดไข้แก้ปวด 500mg' },
-      { name: 'พลาสเตอร์', categoryId: medCategory._id, unit: 'box', description: 'พลาสเตอร์ปิดแผล' },
-      { name: 'แอลกอฮอล์เจล', categoryId: medCategory._id, unit: 'piece', description: 'เจลล้างมือแอลกอฮอล์ 500ml' },
+      // อาหารและเครื่องดื่ม
+      { name: 'ข้าวสาร', categoryId: foodCategory._id, unit: 'กิโลกรัม', description: 'ข้าวสารหอมมะลิ' },
+      { name: 'น้ำดื่ม 1.5 ลิตร', categoryId: foodCategory._id, unit: 'แพ็ค', description: 'น้ำดื่มขวด 1.5 ลิตร แพ็ค 6' },
+      { name: 'นมกล่อง', categoryId: foodCategory._id, unit: 'กล่อง', description: 'นม UHT 200ml' },
+      { name: 'บะหมี่กึ่งสำเร็จรูป', categoryId: foodCategory._id, unit: 'กล่อง', description: 'บะหมี่สำเร็จรูป กล่องละ 30 ซอง' },
+      { name: 'ขนมปัง', categoryId: foodCategory._id, unit: 'แพ็ค', description: 'ขนมปังแผ่น' },
+      { name: 'อาหารกระป๋อง', categoryId: foodCategory._id, unit: 'กระป๋อง', description: 'ปลากระป๋อง อาหารสำเร็จรูป' },
+      // เสื้อผ้าและผ้าห่ม
+      { name: 'ผ้าห่ม', categoryId: clothCategory._id, unit: 'ผืน', description: 'ผ้าห่มนวม' },
+      { name: 'เสื้อผ้า', categoryId: clothCategory._id, unit: 'ชิ้น', description: 'เสื้อผ้าสำเร็จรูป' },
+      { name: 'ผ้าขนหนู', categoryId: clothCategory._id, unit: 'ผืน', description: 'ผ้าขนหนูขนาดใหญ่' },
+      // ยาและเวชภัณฑ์
+      { name: 'ยาพาราเซตามอล', categoryId: medCategory._id, unit: 'กล่อง', description: 'ยาลดไข้แก้ปวด 500mg' },
+      { name: 'พลาสเตอร์', categoryId: medCategory._id, unit: 'กล่อง', description: 'พลาสเตอร์ปิดแผล' },
+      { name: 'แอลกอฮอล์เจล', categoryId: medCategory._id, unit: 'ขวด', description: 'เจลล้างมือแอลกอฮอล์ 500ml' },
+      { name: 'ผ้าพันแผล', categoryId: medCategory._id, unit: 'ม้วน', description: 'ผ้าพันแผลปลอดเชื้อ' },
+      // อุปกรณ์สุขอนามัย
+      { name: 'สบู่', categoryId: hygieneCategory._id, unit: 'ก้อน', description: 'สบู่ก้อน' },
+      { name: 'แชมพู', categoryId: hygieneCategory._id, unit: 'ขวด', description: 'แชมพูสระผม' },
+      { name: 'ยาสีฟัน', categoryId: hygieneCategory._id, unit: 'หลอด', description: 'ยาสีฟันขนาด 150g' },
+      { name: 'แปรงสีฟัน', categoryId: hygieneCategory._id, unit: 'อัน', description: 'แปรงสีฟันสำหรับผู้ใหญ่' },
+      { name: 'ผ้าอนามัย', categoryId: hygieneCategory._id, unit: 'ห่อ', description: 'ผ้าอนามัยแบบมีปีก' },
     ];
 
     const createdItems: any[] = [];
@@ -84,16 +104,28 @@ export async function POST(req: NextRequest) {
 
     // 4. Create Stocks
     const stocksData = [
+      // อาหารและเครื่องดื่ม
       { itemName: 'ข้าวสาร', quantity: 500, minAlert: 100 },
-      { itemName: 'น้ำดื่ม', quantity: 200, minAlert: 50 },
+      { itemName: 'น้ำดื่ม 1.5 ลิตร', quantity: 200, minAlert: 50 },
       { itemName: 'นมกล่อง', quantity: 150, minAlert: 30 },
       { itemName: 'บะหมี่กึ่งสำเร็จรูป', quantity: 100, minAlert: 20 },
+      { itemName: 'ขนมปัง', quantity: 80, minAlert: 20 },
+      { itemName: 'อาหารกระป๋อง', quantity: 120, minAlert: 30 },
+      // เสื้อผ้าและผ้าห่ม
       { itemName: 'ผ้าห่ม', quantity: 80, minAlert: 30 },
       { itemName: 'เสื้อผ้า', quantity: 150, minAlert: 50 },
       { itemName: 'ผ้าขนหนู', quantity: 100, minAlert: 30 },
+      // ยาและเวชภัณฑ์
       { itemName: 'ยาพาราเซตามอล', quantity: 50, minAlert: 20 },
       { itemName: 'พลาสเตอร์', quantity: 30, minAlert: 10 },
       { itemName: 'แอลกอฮอล์เจล', quantity: 40, minAlert: 15 },
+      { itemName: 'ผ้าพันแผล', quantity: 25, minAlert: 10 },
+      // อุปกรณ์สุขอนามัย
+      { itemName: 'สบู่', quantity: 200, minAlert: 50 },
+      { itemName: 'แชมพู', quantity: 100, minAlert: 30 },
+      { itemName: 'ยาสีฟัน', quantity: 100, minAlert: 30 },
+      { itemName: 'แปรงสีฟัน', quantity: 150, minAlert: 40 },
+      { itemName: 'ผ้าอนามัย', quantity: 80, minAlert: 20 },
     ];
 
     const createdStocks: any[] = [];
