@@ -17,11 +17,6 @@ export async function POST(
       return authResult.response || errorResponse('Unauthorized', 401);
     }
 
-    // ตรวจสอบสิทธิ์ (admin หรือ warehouse_staff เท่านั้น)
-    if (authResult.user?.role !== 'warehouse_staff' && authResult.user?.role !== 'admin') {
-      return errorResponse('Only warehouse staff or admin can reject requests', 403);
-    }
-
     await dbConnect();
     const body = await req.json();
     const { reason } = body; // เหตุผลในการปฏิเสธ (optional)
@@ -32,15 +27,28 @@ export async function POST(
       return errorResponse('Request not found', 404);
     }
 
+    // ตรวจสอบสิทธิ์
+    const isAdminOrWarehouse = authResult.user?.role === 'warehouse_staff' || authResult.user?.role === 'admin';
+    const isOwner = request.requestedBy.toString() === authResult.user?.userId;
+
+    // อนุญาตให้:
+    // 1. admin/warehouse_staff ปฏิเสธคำร้องใดก็ได้
+    // 2. shelter_staff ยกเลิกคำร้องของตัวเอง
+    if (!isAdminOrWarehouse && !isOwner) {
+      return errorResponse('You can only cancel your own requests', 403);
+    }
+
     // ตรวจสอบว่าเป็น pending หรือไม่
     if (request.status !== 'pending') {
-      return errorResponse('Can only reject pending requests', 400);
+      return errorResponse('Can only reject/cancel pending requests', 400);
     }
 
     // อัพเดทสถานะเป็น rejected
     request.status = 'rejected';
-    request.rejectionReason = reason || 'ปฏิเสธโดยแอดมิน';
-    request.rejectedBy = authResult.user.userId;
+    request.rejectionReason = isOwner && !isAdminOrWarehouse 
+      ? reason || 'ยกเลิกโดยผู้ขอ' 
+      : reason || 'ปฏิเสธโดยแอดมิน';
+    request.rejectedBy = authResult.user!.userId;
     request.rejectedAt = new Date();
     await request.save();
 
