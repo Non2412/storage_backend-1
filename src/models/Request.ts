@@ -46,6 +46,19 @@ const requestSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
+    rejectionReason: {
+      type: String,
+      default: null,
+    },
+    rejectedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      default: null,
+    },
+    rejectedAt: {
+      type: Date,
+      default: null,
+    },
     items: [requestItemSchema],
     remark: String,
   },
