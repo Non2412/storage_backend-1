@@ -111,7 +111,7 @@ async function seedDatabase(): Promise<void> {
     const users = await User.insertMany([
       {
         name: 'Admin User',
-        email: 'admin@test.com',
+        email: 'admin@sisaket.go.th',
         username: 'admin',
         password: await hashPassword('admin123'),
         role: 'admin',
